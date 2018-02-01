@@ -1,0 +1,88 @@
+﻿
+@{
+    ViewBag.Title = "Result";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Results</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <style type="text/css">
+        #results td.green {
+            color: green;
+        }
+
+        #results td.red {
+            color: red;
+        }
+
+        body {
+        background: #e5f7e3 !important;
+        }
+        /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+    </style>
+
+</head>
+<body>
+
+<h2>Result</h2>
+
+<div style="overflow-x:auto;">
+    <table class="table table-bordered" id="results">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Validation Status</th>
+            <th>File Name</th>
+            <th>Discrepancy Columns</th>
+        </tr>
+        </thead>
+        <tbody>
+        @{
+            var count = 1;
+            foreach (var result in Model.Results)
+            {
+                <tr>
+                    <th scope="row">@count</th>
+
+                    @if (result.IsValidated == "Validated")
+                    {
+                        <td class="green">@result.IsValidated</td>
+                        <td class="green">@result.FileName</td>
+                        <td class="green">@result.DiscrepancyColumns</td>
+                    }
+                    else
+                    {
+                        <td class="red">@result.IsValidated</td>
+                        <td class="red">@result.FileName</td>
+                        <td class="red">@result.DiscrepancyColumns</td>
+                    }
+
+                </tr>
+                count++;
+            }
+        }
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
+
+@section scripts
+{
+    <script>
+        $(document)
+            .ready(function() {
+                $("#results").DataTable();
+            });
+    </script>
+}
+

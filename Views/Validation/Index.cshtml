@@ -1,0 +1,144 @@
+﻿@model CCubed_2012.ViewModels.ValidationFormViewModel
+
+@{
+    ViewBag.Title = "Validation Form";
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Check</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    
+    <style type="text/css">
+        
+        body {
+            background: #e5f7e3 !important;
+        }
+        
+    /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+         
+    </style>
+
+</head>
+
+<body>
+
+<h2>Validation Request</h2>
+
+@using (Html.BeginForm("Result", "Validation"))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Client)
+        @Html.DropDownListFor(m => m.ClientId, new SelectList(Model.Client), "", new {@class = "form-control", id = "Client"})
+        @Html.ValidationMessageFor(m => m.ClientId)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Project)
+        @Html.DropDownListFor(m => m.ProjectId, new SelectList(Model.Project), "", new {@class = "form-control", id = "Project"})
+        @Html.ValidationMessageFor(m => m.ProjectId)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.CheckType)
+        @Html.DropDownListFor(m => m.CheckTypeId, new SelectList(Model.CheckType), "", new {@class = "form-control", id = "CheckType"})
+        @Html.ValidationMessageFor(m => m.CheckTypeId)
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+
+}
+
+</body>
+</html>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryui")
+}
+
+<script type="text/javascript">
+    //Disable Project if Client is not Selected
+    $(document).ready(function () {
+
+        if ($("#Client").val() === "")
+        {
+            $("#Project").attr('disabled', 'disabled');
+        }
+        else
+        {
+            $("#Project").removeAttr('disabled');
+        }
+
+        $("#Client").change(function () {
+
+            if ($(this).val() === "")
+            {
+                $("#Project").attr('disabled', 'disabled');
+            }
+            else
+            {
+                $("#Project").removeAttr('disabled');
+            }
+        });
+    });
+    //Disable CheckType if Project is not selected
+    $(document).ready(function () {
+
+        if ($("#Project").val() === "") {
+            $("#CheckType").attr('disabled', 'disabled');
+        }
+        else {
+            $("#CheckType").removeAttr('disabled');
+        }
+
+        $("#Project").change(function () {
+
+            if ($(this).val() === "") {
+                $("#CheckType").attr('disabled', 'disabled');
+            }
+            else {
+                $("#CheckType").removeAttr('disabled');
+            }
+        });
+    });
+
+    //Filter Dropdowns Base On Previous Dropdown Selections
+    //Project Filter
+    $('#Client').change(function (e) {
+        e.preventDefault();
+        var url = '@Url.Action("GetProjects")';
+        var clientname = $('#Client option:selected').text();
+        $.post(url, { clientName: clientname }, function (data) {
+            var items = [];
+            items.push("<option></option>");
+            $.each(data, function () {
+                items.push("<option value=" + this.Value + ">" + this.Text + "</option>");
+            });
+            $("#Project").html(items.join(' '));
+        });
+    });
+
+    //CheckType Filter
+    $('#Project').change(function (e) {
+        e.preventDefault();
+        var url = '@Url.Action("GetCheckTypes")';
+        var clientname = $('#Client option:selected').text();
+        var projectname = $('#Project option:selected').text();
+        $.post(url, { clientName: clientname, projectName: projectname }, function (data) {
+            var items = [];
+            items.push("<option></option>");
+            $.each(data, function () {
+                items.push("<option value=" + this.Value + ">" + this.Text + "</option>");
+            });
+            $("#CheckType").html(items.join(' '));
+        });
+    });
+
+</script>
+
+
